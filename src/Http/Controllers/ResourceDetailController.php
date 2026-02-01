@@ -5,6 +5,7 @@ namespace Whitecube\NovaPage\Http\Controllers;
 use Illuminate\Routing\Controller;
 use Whitecube\NovaPage\Pages\Manager;
 use Laravel\Nova\Http\Requests\ResourceDetailRequest;
+use Laravel\Nova\Fields\FieldCollection;
 
 abstract class ResourceDetailController extends Controller
 {
@@ -41,9 +42,19 @@ abstract class ResourceDetailController extends Controller
             abort(404);
         }
 
+        $payload = $resource->serializeForDetail($request, $resource);
+
+        /** @var \Laravel\Nova\Fields\FieldCollection $fields */
+        $fields = new FieldCollection($payload["fields"] ?? []);
+
         return response()->json([
-            "title" => $resource->title(),
-            "resource" => $resource->serializeForDetail($request, $resource),
+            "title" => (string) $resource->title(),
+            "panels" => $resource->availablePanelsForDetail(
+                $request,
+                $resource,
+                $fields,
+            ),
+            "resource" => $payload,
         ]);
     }
 }
