@@ -17,7 +17,7 @@ abstract class StaticResource extends Resource
      *
      * @var string
      */
-    public static $title = 'title';
+    public static $title = "title";
 
     /**
      * Indicates if the resoruce should be globally searchable.
@@ -32,9 +32,7 @@ abstract class StaticResource extends Resource
      *
      * @var array
      */
-    public static $search = [
-        'title', 'name'
-    ];
+    public static $search = ["title", "name"];
     /**
      * Indicates if the resource should be displayed in the sidebar.
      *
@@ -100,7 +98,7 @@ abstract class StaticResource extends Resource
     {
         return array_merge(
             $this->getFormIntroductionFields(),
-            $this->getTemplateAttributesFields($request)
+            $this->getTemplateAttributesFields($request),
         );
     }
 
@@ -190,6 +188,52 @@ abstract class StaticResource extends Resource
      * @param  \Illuminate\Http\Request  $request
      * @return bool
      */
+    /**
+     * Determine if the resource is authorizable.
+     *
+     * Override to prevent Nova 5 from trying to resolve the model for authorization,
+     * since this resource does not use an Eloquent model.
+     *
+     * @return bool
+     */
+    public static function authorizable()
+    {
+        return false;
+    }
+
+    /**
+     * Determine if the current user can view any resources.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return bool
+     */
+    public static function authorizedToViewAny(Request $request)
+    {
+        return true;
+    }
+
+    /**
+     * Determine if the current user can view the given resource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return bool
+     */
+    public function authorizedToView(Request $request)
+    {
+        return true;
+    }
+
+    /**
+     * Determine if the current user can update the given resource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return bool
+     */
+    public function authorizedToUpdate(Request $request)
+    {
+        return true;
+    }
+
     public function authorizedToDelete(Request $request)
     {
         return false;
@@ -226,7 +270,9 @@ abstract class StaticResource extends Resource
      */
     public function jsonSerialize(): array
     {
-        return $this->serializeWithId($this->resolveFields(resolve(NovaRequest::class)));
+        return $this->serializeWithId(
+            $this->resolveFields(resolve(NovaRequest::class)),
+        );
     }
 
     /**
@@ -237,12 +283,12 @@ abstract class StaticResource extends Resource
      */
     protected function serializeWithId(Collection $fields)
     {
+        $idField = ID::make("id");
+        $idField->resolve((object) ["id" => $this->getKey()]);
+
         return [
-            'id' => tap(ID::make('id', function() {
-                        return $this->getKey();
-                    }))->resolve($this->resource),
-            'fields' => $fields->all(),
+            "id" => $idField,
+            "fields" => $fields->all(),
         ];
     }
-
 }
