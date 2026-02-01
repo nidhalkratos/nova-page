@@ -16,7 +16,11 @@ abstract class ResourceDetailController extends Controller
      * @param  string $resourceId
      * @return mixed
      */
-    abstract protected function findResource(ResourceDetailRequest $request, Manager $manager, string $resourceId);
+    abstract protected function findResource(
+        ResourceDetailRequest $request,
+        Manager $manager,
+        string $resourceId,
+    );
 
     /**
      * Get the resource detail.
@@ -26,8 +30,11 @@ abstract class ResourceDetailController extends Controller
      * @param  string  $resourceId
      * @return \Illuminate\Http\Response
      */
-    public function handle(ResourceDetailRequest $request, Manager $manager, string $resourceId)
-    {
+    public function handle(
+        ResourceDetailRequest $request,
+        Manager $manager,
+        string $resourceId,
+    ) {
         $resource = $this->findResource($request, $manager, $resourceId);
 
         if (!$resource) {
@@ -35,8 +42,8 @@ abstract class ResourceDetailController extends Controller
         }
 
         return response()->json([
-            'title' => $resource->title(),
-            'resource' => $resource->serializeForDetail($request),
+            "title" => $resource->title(),
+            "resource" => $resource->serializeForDetail($request, $resource),
         ]);
     }
 }
