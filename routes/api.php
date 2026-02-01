@@ -62,7 +62,8 @@ Route::get(
     "/nova-api/nova-page/{resourceId}/update-fields",
     PageResourceUpdateFieldsController::class . "@handle",
 )->where("resourceId", ".*");
-Route::put(
+Route::match(
+    ["put", "post"],
     "/nova-api/nova-page/{resourceId}",
     PageResourceUpdateController::class . "@handle",
 )->where("resourceId", ".*");
@@ -87,7 +88,8 @@ Route::get(
     "/nova-api/nova-option/{resourceId}/update-fields",
     OptionResourceUpdateFieldsController::class . "@handle",
 )->where("resourceId", ".*");
-Route::put(
+Route::match(
+    ["put", "post"],
     "/nova-api/nova-option/{resourceId}",
     OptionResourceUpdateController::class . "@handle",
 )->where("resourceId", ".*");
