@@ -9,11 +9,13 @@ use Whitecube\NovaPage\Http\Controllers\Page\IndexController as PageResourceInde
 use Whitecube\NovaPage\Http\Controllers\Page\DetailController as PageResourceDetailController;
 use Whitecube\NovaPage\Http\Controllers\Page\CountController as PageResourceCountController;
 use Whitecube\NovaPage\Http\Controllers\Page\UpdateController as PageResourceUpdateController;
+use Whitecube\NovaPage\Http\Controllers\Page\UpdateFieldsController as PageResourceUpdateFieldsController;
 use Whitecube\NovaPage\Http\Controllers\Page\FieldDestroyController as PageFieldDestroyController;
 use Whitecube\NovaPage\Http\Controllers\Option\IndexController as OptionResourceIndexController;
 use Whitecube\NovaPage\Http\Controllers\Option\DetailController as OptionResourceDetailController;
 use Whitecube\NovaPage\Http\Controllers\Option\CountController as OptionResourceCountController;
 use Whitecube\NovaPage\Http\Controllers\Option\UpdateController as OptionResourceUpdateController;
+use Whitecube\NovaPage\Http\Controllers\Option\UpdateFieldsController as OptionResourceUpdateFieldsController;
 use Whitecube\NovaPage\Http\Controllers\Option\FieldDestroyController as OptionFieldDestroyController;
 
 /*
@@ -56,6 +58,10 @@ Route::get(
     "/nova-api/nova-page/{resourceId}",
     PageResourceDetailController::class . "@handle",
 );
+Route::get(
+    "/nova-api/nova-page/{resourceId}/update-fields",
+    PageResourceUpdateFieldsController::class . "@handle",
+);
 Route::put(
     "/nova-api/nova-page/{resourceId}",
     PageResourceUpdateController::class . "@handle",
@@ -76,6 +82,10 @@ Route::get(
 Route::get(
     "/nova-api/nova-option/{resourceId}",
     OptionResourceDetailController::class . "@handle",
+);
+Route::get(
+    "/nova-api/nova-option/{resourceId}/update-fields",
+    OptionResourceUpdateFieldsController::class . "@handle",
 );
 Route::put(
     "/nova-api/nova-option/{resourceId}",
