@@ -16,12 +16,11 @@ class DetailController extends ResourceDetailController
      * @param  string $resourceId
      * @return mixed
      */
-    protected function findResource(ResourceDetailRequest $request, Manager $manager, string $resourceId)
-    {
-        $resources = $manager->queryIndexResources($request, 'route');
-        
-        return $resources->first(function($resource) use ($resourceId) {
-            return $resource->getKey() === $resourceId;
-        });
+    protected function findResource(
+        ResourceDetailRequest $request,
+        Manager $manager,
+        string $resourceId,
+    ) {
+        return $manager->findResourceByKey($resourceId, "route");
     }
 }

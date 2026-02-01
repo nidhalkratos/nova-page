@@ -16,10 +16,46 @@ trait QueriesResources
      * @param  string $type
      * @return \Illuminate\Support\Collection
      */
-    public function queryIndexResources(ResourceIndexRequest $request, $type) {
+    public function queryIndexResources(ResourceIndexRequest $request, $type)
+    {
         $query = $this->newQueryWithoutScopes();
-        return $query->whereType($type)->get(false)->map(function($template) use ($type) {
-            return $this->getResourceForType($type, $template);
+        return $query
+            ->whereType($type)
+            ->get(false)
+            ->map(function ($template) use ($type) {
+                return $this->getResourceForType($type, $template);
+            });
+    }
+
+    /**
+     * Retrieves all resources of a given type without requiring a specific request type
+     *
+     * @param  string $type
+     * @return \Illuminate\Support\Collection
+     */
+    public function getAllResourcesOfType($type)
+    {
+        $query = $this->newQueryWithoutScopes();
+        return $query
+            ->whereType($type)
+            ->get(false)
+            ->map(function ($template) use ($type) {
+                return $this->getResourceForType($type, $template);
+            });
+    }
+
+    /**
+     * Find a single resource by key and type
+     *
+     * @param  string $resourceId
+     * @param  string $type
+     * @return \Laravel\Nova\Resource|null
+     */
+    public function findResourceByKey($resourceId, $type)
+    {
+        $resources = $this->getAllResourcesOfType($type);
+        return $resources->first(function ($resource) use ($resourceId) {
+            return $resource->getKey() === $resourceId;
         });
     }
 
@@ -32,7 +68,10 @@ trait QueriesResources
      */
     public function queryResourcesCount(ResourceIndexRequest $request, $type)
     {
-        return $this->newQueryWithoutScopes()->whereType($type)->get(false)->count();
+        return $this->newQueryWithoutScopes()
+            ->whereType($type)
+            ->get(false)
+            ->count();
     }
 
     /**
@@ -42,12 +81,15 @@ trait QueriesResources
      * @param  \Whitecube\NovaPage\Pages\Template $resource
      * @return \Laravel\Nova\Resource
      */
-    protected function getResourceForType($type, Template $resource) {
-        $page_resource_class = config('novapage.default_page_resource');
-        $option_resource_class = config('novapage.default_option_resource');
+    protected function getResourceForType($type, Template $resource)
+    {
+        $page_resource_class = config("novapage.default_page_resource");
+        $option_resource_class = config("novapage.default_option_resource");
         switch ($type) {
-            case 'route': return new $page_resource_class($resource);
-            case 'option': return new $option_resource_class($resource);
+            case "route":
+                return new $page_resource_class($resource);
+            case "option":
+                return new $option_resource_class($resource);
         }
     }
 }
