@@ -13,15 +13,17 @@ trait ResolvesResourceFields
      * Get the fields that are available for the given request.
      *
      * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
-     * @return \Illuminate\Support\Collection
+     * @return \Laravel\Nova\Fields\FieldCollection
      */
-    public function availableFields(NovaRequest $request)
+    public function availableFields(NovaRequest $request): FieldCollection
     {
-        if($this->isDisplayingIndexFields($request)) {
+        if ($this->isDisplayingIndexFields($request)) {
             return new FieldCollection($this->getIndexTableFields($request));
         }
 
-        return new FieldCollection(array_values($this->filter($this->fields($request))));
+        return new FieldCollection(
+            array_values($this->filter($this->fields($request))),
+        );
     }
 
     /**
@@ -33,13 +35,13 @@ trait ResolvesResourceFields
     protected function isDisplayingIndexFields(NovaRequest $request)
     {
         $indexActions = [
-            PageResourceIndexController::class . '@handle',
-            OptionResourceIndexController::class . '@handle'
+            PageResourceIndexController::class . "@handle",
+            OptionResourceIndexController::class . "@handle",
         ];
 
         return in_array(
-            $request->route()->getAction()['controller'],
-            $indexActions
+            $request->route()->getAction()["controller"],
+            $indexActions,
         );
     }
 }
