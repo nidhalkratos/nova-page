@@ -4,10 +4,10 @@ namespace Whitecube\NovaPage\Pages;
 
 use Whitecube\NovaPage\Exceptions\TemplateNotFoundException;
 use Illuminate\Support\Collection;
+use Illuminate\Contracts\Database\Eloquent\Builder as EloquentBuilderContract;
 
-class Query
+class Query implements EloquentBuilderContract
 {
-
     /**
      * The registered NovaPage Templates.
      *
@@ -80,7 +80,7 @@ class Query
     {
         $results = $this->get(false);
 
-        if($results->count()) {
+        if ($results->count()) {
             return $results->first();
         }
 
@@ -95,21 +95,27 @@ class Query
      */
     public function get($throwOnMissing = false)
     {
-        $resources = $this->repository->getFiltered(trim($this->type . '.*', '.'));
+        $resources = $this->repository->getFiltered(
+            trim($this->type . ".*", "."),
+        );
 
         return Collection::make($resources)
-            ->map(function($template, $key) {
+            ->map(function ($template, $key) {
                 return $this->repository->getResourceTemplate($key);
             })
             ->filter()
-            ->reject([$this, 'shouldReject'])
-            ->map(function($template, $key) use ($throwOnMissing) {
-                list($type, $name) = explode('.', $key, 2);
-                return $this->repository->load($type, $name, $this->locale, $throwOnMissing);
+            ->reject([$this, "shouldReject"])
+            ->map(function ($template, $key) use ($throwOnMissing) {
+                [$type, $name] = explode(".", $key, 2);
+                return $this->repository->load(
+                    $type,
+                    $name,
+                    $this->locale,
+                    $throwOnMissing,
+                );
             });
     }
-    
-    
+
     /**
      * Mimic eloquent's Builder and execute the query
      *
@@ -131,7 +137,8 @@ class Query
      * @param string $key
      * @return Illuminate\Support\Collection
      */
-    public function shouldReject($item, $key) {
+    public function shouldReject($item, $key)
+    {
         if (!is_null($this->key)) {
             return $this->key !== $key;
         }
