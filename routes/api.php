@@ -78,17 +78,10 @@ Route::get(
 Route::get(
     "/nova-option/{resourceId}/update-fields",
     OptionResourceUpdateFieldsController::class . "@handle",
-<<<<<<< HEAD
-);
-Route::match(
-    ["put", "post"],
-    "/nova-option/{resourceId}",
-=======
 )->where("resourceId", ".*");
 Route::match(
     ["put", "post"],
-    "/nova-api/nova-option/{resourceId}",
->>>>>>> m1
+    "/nova-option/{resourceId}",
     OptionResourceUpdateController::class . "@handle",
 )->where("resourceId", ".*");
 Route::delete(
