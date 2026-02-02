@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Whitecube\NovaPage\Pages\Template;
 
-class Database implements SourceInterface {
-
+class Database implements SourceInterface
+{
     /**
      * The table used to store static pages content
      *
@@ -37,7 +37,7 @@ class Database implements SourceInterface {
      */
     public function getName()
     {
-        return 'database';
+        return "database";
     }
 
     /**
@@ -47,8 +47,8 @@ class Database implements SourceInterface {
      */
     public function setConfig(array $config)
     {
-        $this->table = $config['table_name'];
-        $this->model = $config['model'];
+        $this->table = $config["table_name"];
+        $this->model = $config["model"];
     }
 
     /**
@@ -61,20 +61,20 @@ class Database implements SourceInterface {
     {
         $model = $this->getOriginal($template);
 
-        if(!$model->id) {
+        if (!$model->id) {
             return;
         }
 
         $attributes = $this->getParsedAttributes(
             $template,
-            $model->attributes ? json_decode($model->attributes, true) : []
+            $model->attributes ? json_decode($model->attributes, true) : [],
         );
 
         return [
-            'title' => $model->title,
-            'created_at' => $model->created_at,
-            'updated_at' => $model->updated_at,
-            'attributes' => $attributes
+            "title" => $model->title,
+            "created_at" => $model->created_at,
+            "updated_at" => $model->updated_at,
+            "attributes" => $attributes,
         ];
     }
 
@@ -89,12 +89,12 @@ class Database implements SourceInterface {
         $original = $this->getOriginal($template);
 
         $original->fill([
-            'name' => $template->getName(),
-            'title' => $template->getTitle(),
-            'type' => $template->getType(),
-            'attributes' => json_encode($template->getAttributes()),
-            'created_at' => $template->getDate('created_at'),
-            'updated_at' => Carbon::now()
+            "name" => $template->getName(),
+            "title" => $template->getTitle(),
+            "type" => $template->getType(),
+            "attributes" => json_encode($template->getAttributes()),
+            "created_at" => $template->getDate("created_at"),
+            "updated_at" => Carbon::now(),
         ]);
 
         $original->save();
@@ -108,10 +108,14 @@ class Database implements SourceInterface {
      */
     public function getOriginal(Template $template)
     {
-        if(!$this->original) {
-            $instance = call_user_func($this->model . '::where', 'name', $template->getName())->first();
+        if (!$this->original) {
+            $instance = call_user_func(
+                $this->model . "::where",
+                "name",
+                $template->getName(),
+            )->first();
 
-            $this->original = $instance ?? (new $this->model);
+            $this->original = $instance ?? new $this->model();
         }
 
         return $this->original;
@@ -127,8 +131,12 @@ class Database implements SourceInterface {
     protected function getParsedAttributes(Template $template, $attributes)
     {
         foreach ($attributes as $key => $value) {
-            if(!is_array($value) && !is_object($value)) continue;
-            if($template->isJsonAttribute($key)) continue;
+            if (!is_array($value) && !is_object($value)) {
+                continue;
+            }
+            if ($template->isJsonAttribute($key)) {
+                continue;
+            }
             $attributes[$key] = json_encode($value);
         }
 
@@ -142,6 +150,11 @@ class Database implements SourceInterface {
      */
     public function getErrorLocation($type, $name)
     {
-        return $this->getName() . ' table "' . $this->table . '". Page "' . $name . '".';
+        return $this->getName() .
+            ' table "' .
+            $this->table .
+            '". Page "' .
+            $name .
+            '".';
     }
 }

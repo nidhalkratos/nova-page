@@ -24,7 +24,7 @@ abstract class ResourceUpdateController extends Controller
     public function handle(UpdateResourceRequest $request)
     {
         $route = call_user_func($request->getRouteResolver());
-        $route->setParameter('resource', $this->resourceName);
+        $route->setParameter("resource", $this->resourceName);
         $request->findResourceOrFail()->authorizeToUpdate($request);
 
         $resource = $request->resource();
@@ -34,7 +34,7 @@ abstract class ResourceUpdateController extends Controller
         $template = $request->findModelQuery()->firstOrFail();
 
         if ($this->templateHasBeenUpdatedSinceRetrieval($request, $template)) {
-            return response('', 409);
+            return response("", 409);
         }
 
         [$template, $callbacks] = $resource::fillForUpdate($request, $template);
@@ -43,9 +43,12 @@ abstract class ResourceUpdateController extends Controller
         collect($callbacks)->each->__invoke();
 
         return response()->json([
-            'id' => $template->getKey(),
-            'resource' => $template->getAttributes(),
-            'redirect' => $resource::redirectAfterUpdate($request, $request->newResourceWith($template)),
+            "id" => $template->getKey(),
+            "resource" => $template->getAttributes(),
+            "redirect" => $resource::redirectAfterUpdate(
+                $request,
+                $request->newResourceWith($template),
+            ),
         ]);
     }
 
@@ -56,11 +59,15 @@ abstract class ResourceUpdateController extends Controller
      * @param  \Whitecube\NovaPage\Pages\Template  $template
      * @return void
      */
-    protected function templateHasBeenUpdatedSinceRetrieval(UpdateResourceRequest $request, $template)
-    {
-        $date = $template->getDate('updated_at');
-        return $request->input('_retrieved_at') && $date && $date->gt(
-            Carbon::createFromTimestamp($request->input('_retrieved_at'))
-        );
+    protected function templateHasBeenUpdatedSinceRetrieval(
+        UpdateResourceRequest $request,
+        $template,
+    ) {
+        $date = $template->getDate("updated_at");
+        return $request->input("_retrieved_at") &&
+            $date &&
+            $date->gt(
+                Carbon::createFromTimestamp($request->input("_retrieved_at")),
+            );
     }
 }

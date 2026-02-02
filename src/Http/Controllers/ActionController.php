@@ -5,6 +5,7 @@ namespace Whitecube\NovaPage\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Laravel\Nova\Http\Controllers\ActionController as Controller;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Nova;
 
 class ActionController extends Controller
 {
@@ -19,8 +20,13 @@ class ActionController extends Controller
         return response()->json([
             "actions" => [],
             "pivotActions" => [
-                "name" => $request->pivotName(),
+                "name" => Nova::humanize($request->pivotName()),
                 "actions" => [],
+            ],
+            "counts" => [
+                "sole" => 0,
+                "standalone" => 0,
+                "resource" => 0,
             ],
         ]);
     }
