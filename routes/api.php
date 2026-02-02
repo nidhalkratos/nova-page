@@ -51,7 +51,7 @@ Route::get("/nova-page/count", PageResourceCountController::class . "@show");
 Route::get(
     "/nova-page/{resourceId}",
     PageResourceDetailController::class . "@handle",
-);
+)->where("resourceId", ".*");
 Route::get(
     "/nova-page/{resourceId}/update-fields",
     PageResourceUpdateFieldsController::class . "@handle",
@@ -60,11 +60,11 @@ Route::match(
     ["put", "post"],
     "/nova-page/{resourceId}",
     PageResourceUpdateController::class . "@handle",
-);
+)->where("resourceId", ".*");
 Route::delete(
     "/nova-page/{resourceId}/field/{field}",
     PageFieldDestroyController::class . "@handle",
-);
+)->where("resourceId", ".*");
 
 Route::get("/nova-option", OptionResourceIndexController::class . "@handle");
 Route::get(
@@ -74,17 +74,24 @@ Route::get(
 Route::get(
     "/nova-option/{resourceId}",
     OptionResourceDetailController::class . "@handle",
-);
+)->where("resourceId", ".*");
 Route::get(
     "/nova-option/{resourceId}/update-fields",
     OptionResourceUpdateFieldsController::class . "@handle",
+<<<<<<< HEAD
 );
 Route::match(
     ["put", "post"],
     "/nova-option/{resourceId}",
+=======
+)->where("resourceId", ".*");
+Route::match(
+    ["put", "post"],
+    "/nova-api/nova-option/{resourceId}",
+>>>>>>> m1
     OptionResourceUpdateController::class . "@handle",
-);
+)->where("resourceId", ".*");
 Route::delete(
     "/nova-option/{resourceId}/field/{field}",
     OptionFieldDestroyController::class . "@handle",
-);
+)->where("resourceId", ".*");
